@@ -22,36 +22,41 @@ class Player:
 
 
 class Board:
-    def __init__(self, cols_and_rows):
+    def __init__(self, screen, cols_and_rows):
+        self.screen = screen
         self.board = [
             ['' for _ in range(cols_and_rows)] for _ in range(cols_and_rows)
         ]
 
-    def draw_board(self, screen):
+    def draw_board(self):
         # TODO: COMENTAR ESSA PARTE (COMENTAR MUITO)
         self.x_off = SCREEN_SIZE[0] // len(self.board)
         self.y_off = SCREEN_SIZE[1] // len(self.board)
 
         for i in range((len(self.board))):
             pygame.draw.line(
-                screen, colors['BLACK'], (0, (i + 1) * self.x_off), (SCREEN_SIZE[0], (i + 1) * self.y_off), 5)
+                self.screen, colors['BLACK'], (0, (i + 1) * self.x_off), (SCREEN_SIZE[0], (i + 1) * self.y_off), 5)
             for j in range(len(self.board[i])):
 
                 pygame.draw.line(
-                    screen, colors['BLACK'], ((j + 1) * self.x_off, 0), ((j + 1) * self.y_off, SCREEN_SIZE[0]), 5)
+                    self.screen, colors['BLACK'], ((j + 1) * self.x_off, 0), ((j + 1) * self.y_off, SCREEN_SIZE[0]), 5)
+        self.draw_players()
 
-                # pygame.draw.rect(screen, colors['RED'], ((
-                #     j) * x_off, (i) * y_off, 144, 144))
-                # THATS THE WAY THAT WE NEED TO GO WITH OMG O FUCKING DID IT
-                # os.system("clear")
-    def play(self, mouse_pos, player):  # TODO: player
+    def draw_players(self):
+        lp = 50
+        pygame.draw.line(
+            self.screen, colors['RED'], (0+lp, 0+lp), (self.x_off-lp, self.y_off-lp), 20)
+        pygame.draw.line(
+            self.screen, colors['RED'], (0+lp, self.y_off-lp), (self.x_off-lp, 0+lp), 20)
+
+    def play(self, mouse_pos, player):
         mouse_x = int(mouse_pos[0] // self.x_off)
         mouse_y = int(mouse_pos[1] // self.y_off)
 
         player.change_players()
         self.board[mouse_y][mouse_x] = player.players[player.current_player]
         print(self.board)
-        
+
 
 class Game:
     def __init__(self):
@@ -61,12 +66,12 @@ class Game:
         self.keys = pygame.key.get_pressed()
         self.clock = pygame.time.Clock()
         self.fps = 60
-        self.Board = Board(cols_and_rows=3)
+        self.Board = Board(self.screen, cols_and_rows=3)
         self.Player = Player()
 
     def render(self):
         self.screen.fill(colors['WHITE'])
-        self.Board.draw_board(self.screen)
+        self.Board.draw_board()
         pygame.display.update()
 
     def update(self):
