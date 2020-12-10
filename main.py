@@ -24,9 +24,12 @@ class Player:
 class Board:
     def __init__(self, screen, cols_and_rows):
         self.screen = screen
+        self.cols_and_rows = cols_and_rows
         self.board = [
-            ['' for _ in range(cols_and_rows)] for _ in range(cols_and_rows)
+            ['' for _ in range(self.cols_and_rows)] for _ in range(self.cols_and_rows)
         ]
+        self.mouse_x = None
+        self.mouse_y = None
 
     def draw_board(self):
         # TODO: COMENTAR ESSA PARTE (COMENTAR MUITO)
@@ -36,26 +39,30 @@ class Board:
         for i in range((len(self.board))):
             pygame.draw.line(
                 self.screen, colors['BLACK'], (0, (i + 1) * self.x_off), (SCREEN_SIZE[0], (i + 1) * self.y_off), 5)
-            for j in range(len(self.board[i])):
 
+            for j in range(len(self.board[i])):
                 pygame.draw.line(
                     self.screen, colors['BLACK'], ((j + 1) * self.x_off, 0), ((j + 1) * self.y_off, SCREEN_SIZE[0]), 5)
         self.draw_players()
 
-    def draw_players(self):
-        lp = 50
-        pygame.draw.line(
-            self.screen, colors['RED'], (0+lp, 0+lp), (self.x_off-lp, self.y_off-lp), 20)
-        pygame.draw.line(
-            self.screen, colors['RED'], (0+lp, self.y_off-lp), (self.x_off-lp, 0+lp), 20)
-
     def play(self, mouse_pos, player):
-        mouse_x = int(mouse_pos[0] // self.x_off)
-        mouse_y = int(mouse_pos[1] // self.y_off)
+        self.mouse_x = int(mouse_pos[0] // self.x_off)
+        self.mouse_y = int(mouse_pos[1] // self.y_off)
 
         player.change_players()
-        self.board[mouse_y][mouse_x] = player.players[player.current_player]
+        self.board[self.mouse_y][self.mouse_x] = player.players[player.current_player]
         print(self.board)
+
+    def draw_players(self):
+        lp = 120 // self.cols_and_rows
+        if self.mouse_x is not None and self.mouse_y is not None:
+            pygame.draw.line(
+                self.screen, colors['RED'], ((self.mouse_x)*self.x_off+lp, (self.mouse_y)*self.y_off+lp), ((self.mouse_x + 1)*self.x_off-lp, (self.mouse_y+1)*self.y_off-lp), 20)
+            pygame.draw.line(
+                self.screen, colors['RED'], ((self.mouse_x)*self.x_off + lp, (self.mouse_y + 1)*self.y_off - lp), ((self.mouse_x + 1)*self.x_off - lp, (self.mouse_y)*self.y_off + lp), 20)
+
+        # pygame.draw.ellipse(
+        #     self.screen, colors['BLUE'], (0 + lp/2, 0 + lp/2, 100, 100), 20)
 
 
 class Game:
@@ -91,6 +98,7 @@ class Game:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.mouse = pygame.mouse.get_pos()
                 self.Board.play(self.mouse, self.Player)
+                self.Board.draw_players()
 
     def main_loop(self):
         self.clock.tick(self.fps)
