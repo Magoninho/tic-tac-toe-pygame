@@ -22,47 +22,57 @@ class Player:
 
 
 class Board:
-    def __init__(self, screen, cols_and_rows):
+    def __init__(self, screen, player_class, cols_and_rows):
         self.screen = screen
         self.cols_and_rows = cols_and_rows
         self.board = [
             ['' for _ in range(self.cols_and_rows)] for _ in range(self.cols_and_rows)
         ]
+        self.player = player_class
         self.mouse_x = None
         self.mouse_y = None
 
     def draw_board(self):
-        # TODO: COMENTAR ESSA PARTE (COMENTAR MUITO)
         self.x_off = SCREEN_SIZE[0] // len(self.board)
         self.y_off = SCREEN_SIZE[1] // len(self.board)
 
-        for i in range((len(self.board))):
+        for i in range((len(self.board))-1):
             pygame.draw.line(
                 self.screen, colors['BLACK'], (0, (i + 1) * self.x_off), (SCREEN_SIZE[0], (i + 1) * self.y_off), 5)
 
-            for j in range(len(self.board[i])):
+            for j in range(len(self.board[i])-1):
                 pygame.draw.line(
                     self.screen, colors['BLACK'], ((j + 1) * self.x_off, 0), ((j + 1) * self.y_off, SCREEN_SIZE[0]), 5)
         self.draw_players()
 
-    def play(self, mouse_pos, player):
+    def play(self, mouse_pos):
         self.mouse_x = int(mouse_pos[0] // self.x_off)
         self.mouse_y = int(mouse_pos[1] // self.y_off)
 
-        player.change_players()
-        self.board[self.mouse_y][self.mouse_x] = player.players[player.current_player]
-        print(self.board)
+        self.player.change_players()
+        # adds to the board and X or an O
+        self.board[self.mouse_y][self.mouse_x] = self.player.players[self.player.current_player]
+        print(self.board)  # remove this after
 
     def draw_players(self):
-        lp = 120 // self.cols_and_rows
-        if self.mouse_x is not None and self.mouse_y is not None:
-            pygame.draw.line(
-                self.screen, colors['RED'], ((self.mouse_x)*self.x_off+lp, (self.mouse_y)*self.y_off+lp), ((self.mouse_x + 1)*self.x_off-lp, (self.mouse_y+1)*self.y_off-lp), 20)
-            pygame.draw.line(
-                self.screen, colors['RED'], ((self.mouse_x)*self.x_off + lp, (self.mouse_y + 1)*self.y_off - lp), ((self.mouse_x + 1)*self.x_off - lp, (self.mouse_y)*self.y_off + lp), 20)
 
-        # pygame.draw.ellipse(
-        #     self.screen, colors['BLUE'], (0 + lp/2, 0 + lp/2, 100, 100), 20)
+        lp = 120 // self.cols_and_rows
+
+        # como as coordenadas do mouse começam como None, eu tenho que verificar antes de executar
+        if self.mouse_x is not None and self.mouse_y is not None:
+            # checa qual jogador será desenhado a partir da variavel current_player da classe Player
+
+            # se for o X
+            if self.player.current_player is 0:
+                pygame.draw.line(
+                    self.screen, colors['RED'], ((self.mouse_x)*self.x_off+lp, (self.mouse_y)*self.y_off+lp), ((self.mouse_x + 1)*self.x_off-lp, (self.mouse_y+1)*self.y_off-lp), lp)
+                pygame.draw.line(
+                    self.screen, colors['RED'], ((self.mouse_x) * self.x_off + lp, (self.mouse_y + 1) * self.y_off - lp), ((self.mouse_x + 1) * self.x_off - lp, (self.mouse_y) * self.y_off + lp), lp)
+
+            # se for a bola
+            elif self.player.current_player is 1:
+                pygame.draw.ellipse(self.screen, colors['BLUE'], ((
+                    self.mouse_x)*self.x_off + lp/2, (self.mouse_y)*self.y_off + lp/2, self.x_off - lp, self.y_off - lp), 0)
 
 
 class Game:
@@ -73,11 +83,12 @@ class Game:
         self.keys = pygame.key.get_pressed()
         self.clock = pygame.time.Clock()
         self.fps = 60
-        self.Board = Board(self.screen, cols_and_rows=3)
         self.Player = Player()
+        self.Board = Board(self.screen, self.Player, cols_and_rows=6)
+        self.screen.fill(colors['WHITE'])
 
     def render(self):
-        self.screen.fill(colors['WHITE'])
+
         self.Board.draw_board()
         pygame.display.update()
 
@@ -97,7 +108,7 @@ class Game:
                     exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.mouse = pygame.mouse.get_pos()
-                self.Board.play(self.mouse, self.Player)
+                self.Board.play(self.mouse)
                 self.Board.draw_players()
 
     def main_loop(self):

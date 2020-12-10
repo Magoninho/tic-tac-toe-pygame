@@ -1,0 +1,16 @@
+TODO LIST:
+
+- [x] fazer o desenho permanecer na tela
+- [x] alternar entre os jogadores
+- [] desenhar os jogadores alternados
+- [] melhorar a bola
+- [] fazer a condição de empate (checar se o tabuleiro esta cheio)
+    - [] a partir dessas fazer as condições de vitoria PARA CADA JOGADOR
+        - [] diagonal
+        - [] horizontal
+        - [] vertical
+    - [] determinar quem ganhou
+
+- [] desenhar a linha caso alguem vença
+- [] comentar o codigo (comentar muito)
+- [] remover os print

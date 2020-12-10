@@ -1,0 +1,21 @@
+# How to make the drawinings stay on the screen when drawned?
+- making an array and append all the drawinings to it?
+- 
+
+
+# How to make the DRAWINING of player change?
+
+# How to check if the board array is full, and which parts are AVAILABLE?
+Checking if the spot is available avoids the player override the play of your opponent (which is unfair :P)
+...
+
+# How to check if someone wins? And how to check the directions that the player won (diagonals, etc)
+To check that there was a tie, the board must be full AND without any wins.
+To someone win, the board can be full or not (because it could be the last play). 
+So there are two diferent conditions:
+- if the board is full/there's no spots available AND no wins then: tie
+- if he have some win : the player wins
+
+
+# How to draw the line that shows who won?
+
