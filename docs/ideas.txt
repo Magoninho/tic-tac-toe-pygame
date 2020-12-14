@@ -27,9 +27,4 @@ checar as horizontais, verticais e diagonais
     cada um precisa ser igual, MAS NAO PODEM SER VAZIOS. pois se forem vazios o jogo vai pensar que a parte branca ('') ganhou
 
 
-
-# How to draw the line that shows who won?
-
-
-
-# como fazer a verificação do vencedor que funciona em qualquer tamanho de tabuleiro
+fazer uma versao que o computador joge sozinho kkkkk ia ser louco

@@ -3,120 +3,153 @@ import os
 from pygame.locals import *
 from colors import *
 
+# some constants
 SCREEN_SIZE = (500, 500)
 TITLE = "Tic Tac Toe"
+
+# Player class
 
 
 class Player:
     def __init__(self):
+
+        # An array that contains the players
         self.players = [
             'O', 'X'
         ]
+        # the current player (this will be changed through the plays)
         self.current_player = 1
 
+    # the function that changes the current player
     def change_players(self):
         if self.current_player == 0:
             self.current_player = 1
         elif self.current_player == 1:
             self.current_player = 0
 
-
+# The board class
 class Board:
     def __init__(self, screen, player_class, cols_and_rows):
+        # the surface where the board will be drawned (the screen)
         self.screen = screen
-        self.cols_and_rows = cols_and_rows
+        self.cols_and_rows = cols_and_rows  # how many cols and rows the grid needs
         self.board = [
+            # the grid array based on the self.cols_and_rows variable
             ['' for _ in range(self.cols_and_rows)] for _ in range(self.cols_and_rows)
         ]
-        self.available = []  # array pra checar quais spots estao disponiveis
+        self.player = player_class  # the player class, so we can make stuff with it
 
-        self.player = player_class
+        # Declaring the coordinates of the mouse so we can make the use of it
         self.mouse_x = None
         self.mouse_y = None
 
+    # The function that will determine who is the winner
     def check_winner(self, player):
 
         # Vertical
         for col in range(len(self.board)):
+            """
+            Here comes a lot of conditions in diferent arrays
+            and if all of one of them are True, then print the winner
+            """
             conditions_vertical = [self.board[row][col] ==
-                                   player for row in range(len(self.board))]
+                                   player for row in range(len(self.board))]  # this is for the verticals
             conditions_horizontal = [self.board[col][row] ==
-                                     player for row in range(len(self.board))]
+                                     player for row in range(len(self.board))]  # this is for the horizontals
             conditions_diagonal_1 = [self.board[row][row] ==
-                                     player for row in range(len(self.board))]
+                                     player for row in range(len(self.board))]  # this is for the first diagonal
             conditions_diagonal_2 = [self.board[col][col] ==
-                                     player for col in range(len(self.board))]
+                                     player for col in range(len(self.board))]  # this is for the second diagonal
+
+            # This will check if all of the conditions in one of the arrays are true using the built-in python all() function
             if all(conditions_vertical) or all(conditions_horizontal) or all(conditions_diagonal_1) or all(conditions_diagonal_2):
-                os.system("cls")
                 print(
                     f"o jogador {player} ganhou o jooj!!!\nParabéns {player}, você é muito brabo", end="")
 
+    # The function that draws the board
     def draw_board(self):
+        self.line_thicness = 4
+        # this is the offset between the lines
+        # calculated by the division of the width (x) and the height (y) of the screen and the length of the board
         self.x_off = SCREEN_SIZE[0] // len(self.board)
         self.y_off = SCREEN_SIZE[1] // len(self.board)
 
+        # The code that draws the lines using the X offset and the Y offset
+        # very smart calculations (nope)
         for i in range((len(self.board))-1):
             pygame.draw.line(
-                self.screen, colors['BLACK'], (0, (i + 1) * self.x_off), (SCREEN_SIZE[0], (i + 1) * self.y_off), 5)
+                self.screen, colors['BLACK'], (0, (i + 1) * self.x_off), (SCREEN_SIZE[0], (i + 1) * self.y_off), self.line_thicness)
 
             for j in range(len(self.board[i])-1):
                 pygame.draw.line(
-                    self.screen, colors['BLACK'], ((j + 1) * self.x_off, 0), ((j + 1) * self.y_off, SCREEN_SIZE[0]), 5)
+                    self.screen, colors['BLACK'], ((j + 1) * self.x_off, 0), ((j + 1) * self.y_off, SCREEN_SIZE[0]), self.line_thicness)
 
+    # The function for playing the game
     def play(self, mouse_pos):
 
+        # It gets the mouse position and divides it with the x and y offset to get 0 or 1 or 2... depending of where the mouse clicked
         self.mouse_x = int(mouse_pos[0] // self.x_off)
         self.mouse_y = int(mouse_pos[1] // self.y_off)
 
+        # It checks if the place where you clicked is empty or not
+        # if it is, then mark, else, do nothing
         if self.board[self.mouse_y][self.mouse_x] == '':
-            # adds to the board and X or an O
+            # adds to the board and X or an O (depends on the current_player variable)
             self.board[self.mouse_y][self.mouse_x] = self.player.players[self.player.current_player]
+            # runs the check winner function by passing the current_player
             self.check_winner(self.player.players[self.player.current_player])
+            # When the play is done (the user clicked in some spot), the turn changes
             self.player.change_players()
-            self.draw_players()  # toda vida que ocorrer uma jogada ele vai desenhar essa jogada
-            # print(self.board)
+            self.draw_players()  # every time that a play happens, it will draw the players
 
+    # The function that draws the players
     def draw_players(self):
 
+        # this is some kind of offset for the drawining don't fill the spot (also it is the thicness of the 'x' player)
         lp = 120 // self.cols_and_rows
 
-        # como as coordenadas do mouse começam como None, eu tenho que verificar antes de executar
+        # because of the coordinates of the mouse starts as None, I have to verify before doing something
         if self.mouse_x is not None and self.mouse_y is not None:
-            # checa qual jogador será desenhado a partir da variavel current_player da classe Player
-            # se for o X
+            # checks which player will be drawn by the value of the current_player variable
+            # if it is 'X' (current_player = 0)
             if self.player.current_player is 0:
+
+                # a lot of smart calculations (good luck understanding then)
                 pygame.draw.line(
                     self.screen, colors['RED'], ((self.mouse_x)*self.x_off+lp, (self.mouse_y)*self.y_off+lp), ((self.mouse_x + 1)*self.x_off-lp, (self.mouse_y+1)*self.y_off-lp), lp)
                 pygame.draw.line(
                     self.screen, colors['RED'], ((self.mouse_x) * self.x_off + lp, (self.mouse_y + 1) * self.y_off - lp), ((self.mouse_x + 1) * self.x_off - lp, (self.mouse_y) * self.y_off + lp), lp)
 
-            # se for a bola
+            # if it is the 'O' (current_player = 1)
             elif self.player.current_player is 1:
                 pygame.draw.ellipse(self.screen, colors['BLUE'], ((
                     self.mouse_x)*self.x_off + lp/2, (self.mouse_y)*self.y_off + lp/2, self.x_off - lp, self.y_off - lp), 0)
 
+# The Game class
+
 
 class Game:
     def __init__(self):
-        self.screen = pygame.display.set_mode(SCREEN_SIZE)
-        self.title = pygame.display.set_caption(TITLE)
+        # setup stuff
+        self.screen = pygame.display.set_mode(SCREEN_SIZE)  # screen size
+        self.title = pygame.display.set_caption(TITLE)  # window title
         self.done = False
+        # a variable that gets all the keys pressed (not useful in this game)
         self.keys = pygame.key.get_pressed()
-        self.clock = pygame.time.Clock()
-        self.fps = 60
-        self.Player = Player()
-        self.Board = Board(self.screen, self.Player, cols_and_rows=5)
+        self.clock = pygame.time.Clock()  # the pygame clock class
+        self.fps = 60  # maximum frames per second
+        self.Player = Player()  # the player class instanciated here
+        # the board class instanciated here
+        self.Board = Board(self.screen, self.Player, cols_and_rows=3)
+        # it fills the screen once, so we can draw a lot of things when we click
         self.screen.fill(colors['WHITE'])
 
+    # the render method, where we render the stuff we need to render when the program starts
     def render(self):
+        self.Board.draw_board()  # drawining the board
+        pygame.display.update()  # updating the display
 
-        self.Board.draw_board()
-        pygame.display.update()
-
-    def update(self):
-
-        pass
-
+    # the loop that treats the pygame events
     def event_loop(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -131,20 +164,21 @@ class Game:
                 self.mouse = pygame.mouse.get_pos()
                 self.Board.play(self.mouse)
 
+    # the method that contains the main while loop (the heart of the game)
     def main_loop(self):
-        self.clock.tick(self.fps)
+        self.clock.tick(self.fps) # limits the fps
         while not self.done:
             self.event_loop()
-            self.update()
             self.render()
 
 
+# the main function
 def main():
-    pygame.init()
+    pygame.init()  # starts pygame
+    game = Game()  # instanciate the game class
+    game.main_loop()  # starts the main loop
 
-    game = Game()
-    game.main_loop()
 
-
+# calls the main function
 if __name__ == "__main__":
     main()
