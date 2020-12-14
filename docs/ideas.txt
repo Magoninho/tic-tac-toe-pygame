@@ -1,13 +1,20 @@
-# How to make the drawinings stay on the screen when drawned?
-- making an array and append all the drawinings to it?
-- 
-
 
 # How to make the DRAWINING of player change?
 
 # How to check if the board array is full, and which parts are AVAILABLE?
 Checking if the spot is available avoids the player override the play of your opponent (which is unfair :P)
-...
+
+todos os espaços do jogo podem estar tanto DISPONIVEIS, quanto INDISPONIVEIS pois pode já haver algum desenho nele.
+a tecnica pra checar se já existe um desenho nele nao deu certo entao temos que pensar em outra forma
+THE CODING TRAIN HELP
+
+criar um array com as posições disponiveis e remover a posição em que o mouse clicou 
+no video ele cria uma funçao nextTurn, no meu codigo eu deveria fazer isso na função play()
+se nao tiver mais lugares disponiveis o array available deve estar COMPLETO (length = 0) e sem nenhum vencedor (criar uma variavel pra o vencedor)
+
+- fazer tudo isso na classe player ou na classe board?
+como na classe board tem a função play() entao é possivel fazer por lá
+
 
 # How to check if someone wins? And how to check the directions that the player won (diagonals, etc)
 To check that there was a tie, the board must be full AND without any wins.
@@ -16,6 +23,13 @@ So there are two diferent conditions:
 - if the board is full/there's no spots available AND no wins then: tie
 - if he have some win : the player wins
 
+checar as horizontais, verticais e diagonais
+    cada um precisa ser igual, MAS NAO PODEM SER VAZIOS. pois se forem vazios o jogo vai pensar que a parte branca ('') ganhou
+
+
 
 # How to draw the line that shows who won?
 
+
+
+# como fazer a verificação do vencedor que funciona em qualquer tamanho de tabuleiro

@@ -10,9 +10,9 @@ TITLE = "Tic Tac Toe"
 class Player:
     def __init__(self):
         self.players = [
-            'X', 'O'
+            'O', 'X'
         ]
-        self.current_player = 0
+        self.current_player = 1
 
     def change_players(self):
         if self.current_player == 0:
@@ -28,9 +28,28 @@ class Board:
         self.board = [
             ['' for _ in range(self.cols_and_rows)] for _ in range(self.cols_and_rows)
         ]
+        self.available = []  # array pra checar quais spots estao disponiveis
+
         self.player = player_class
         self.mouse_x = None
         self.mouse_y = None
+
+    def check_winner(self, player):
+
+        # Vertical
+        for col in range(len(self.board)):
+            conditions_vertical = [self.board[row][col] ==
+                                   player for row in range(len(self.board))]
+            conditions_horizontal = [self.board[col][row] ==
+                                     player for row in range(len(self.board))]
+            conditions_diagonal_1 = [self.board[row][row] ==
+                                     player for row in range(len(self.board))]
+            conditions_diagonal_2 = [self.board[col][col] ==
+                                     player for col in range(len(self.board))]
+            if all(conditions_vertical) or all(conditions_horizontal) or all(conditions_diagonal_1) or all(conditions_diagonal_2):
+                os.system("cls")
+                print(
+                    f"o jogador {player} ganhou o jooj!!!\nParabéns {player}, você é muito brabo", end="")
 
     def draw_board(self):
         self.x_off = SCREEN_SIZE[0] // len(self.board)
@@ -43,16 +62,19 @@ class Board:
             for j in range(len(self.board[i])-1):
                 pygame.draw.line(
                     self.screen, colors['BLACK'], ((j + 1) * self.x_off, 0), ((j + 1) * self.y_off, SCREEN_SIZE[0]), 5)
-        self.draw_players()
 
     def play(self, mouse_pos):
+
         self.mouse_x = int(mouse_pos[0] // self.x_off)
         self.mouse_y = int(mouse_pos[1] // self.y_off)
 
-        self.player.change_players()
-        # adds to the board and X or an O
-        self.board[self.mouse_y][self.mouse_x] = self.player.players[self.player.current_player]
-        print(self.board)  # remove this after
+        if self.board[self.mouse_y][self.mouse_x] == '':
+            # adds to the board and X or an O
+            self.board[self.mouse_y][self.mouse_x] = self.player.players[self.player.current_player]
+            self.check_winner(self.player.players[self.player.current_player])
+            self.player.change_players()
+            self.draw_players()  # toda vida que ocorrer uma jogada ele vai desenhar essa jogada
+            # print(self.board)
 
     def draw_players(self):
 
@@ -61,7 +83,6 @@ class Board:
         # como as coordenadas do mouse começam como None, eu tenho que verificar antes de executar
         if self.mouse_x is not None and self.mouse_y is not None:
             # checa qual jogador será desenhado a partir da variavel current_player da classe Player
-
             # se for o X
             if self.player.current_player is 0:
                 pygame.draw.line(
@@ -84,7 +105,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.fps = 60
         self.Player = Player()
-        self.Board = Board(self.screen, self.Player, cols_and_rows=6)
+        self.Board = Board(self.screen, self.Player, cols_and_rows=5)
         self.screen.fill(colors['WHITE'])
 
     def render(self):
@@ -109,7 +130,6 @@ class Game:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.mouse = pygame.mouse.get_pos()
                 self.Board.play(self.mouse)
-                self.Board.draw_players()
 
     def main_loop(self):
         self.clock.tick(self.fps)
