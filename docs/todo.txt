@@ -1,15 +1,15 @@
 TODO LIST:
 
-- [x] fazer o desenho permanecer na tela
-- [x] alternar entre os jogadores
-- [x] desenhar os jogadores alternados
-- [x] melhorar a bola
-- [x] procurar como fazer pro jogador nao sobreescrever o outro
-- [x] fazer as condições de vitoria PARA CADA JOGADOR
+- [x] make the drawining stay on the screen
+- [x] change players
+- [x] draw the players
+- [] melhorar a bola
+- [] procurar como fazer pro jogador nao sobreescrever o outro
+- [] fazer as condições de vitoria PARA CADA JOGADOR
         - [x] diagonal
         - [x] horizontal
         - [x] vertical
     - [x] determinar quem ganhou
 
-- [x] comentar o codigo (comentar muito)
+- [x] comment the code (comment a lot)
 - [] desenhar a linha caso alguem vença

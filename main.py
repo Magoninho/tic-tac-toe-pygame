@@ -1,4 +1,5 @@
 import pygame
+import json
 import os
 from pygame.locals import *
 from colors import *
@@ -6,6 +7,11 @@ from colors import *
 # some constants
 SCREEN_SIZE = (500, 500)
 TITLE = "Tic Tac Toe"
+
+pygame.font.init()
+
+with open('./settings.json') as f:
+    settings = json.load(f)
 
 # Player class
 
@@ -28,6 +34,8 @@ class Player:
             self.current_player = 0
 
 # The board class
+
+
 class Board:
     def __init__(self, screen, player_class, cols_and_rows):
         # the surface where the board will be drawned (the screen)
@@ -46,29 +54,36 @@ class Board:
     # The function that will determine who is the winner
     def check_winner(self, player):
 
-        # Vertical
+        # Conditions
+        """
+        Here comes a lot of conditions in diferent arrays
+        and if all of one of them are True, then print the winner
+        """
         for col in range(len(self.board)):
-            """
-            Here comes a lot of conditions in diferent arrays
-            and if all of one of them are True, then print the winner
-            """
+
             conditions_vertical = [self.board[row][col] ==
                                    player for row in range(len(self.board))]  # this is for the verticals
             conditions_horizontal = [self.board[col][row] ==
                                      player for row in range(len(self.board))]  # this is for the horizontals
             conditions_diagonal_1 = [self.board[row][row] ==
                                      player for row in range(len(self.board))]  # this is for the first diagonal
-            conditions_diagonal_2 = [self.board[col][col] ==
-                                     player for col in range(len(self.board))]  # this is for the second diagonal
+            # conditions_diagonal_2 = [self.board[col][row] ==
+            #                          player for row in range(len(self.board) - 1, -1, -1)]  # this is for the second diagonal
+            conditions_diagonal_2 = [self.board[0][2] == player]
+
+            # TODO: tentar fazer a condição de diagonal direito, agora eu nao sei fazer por enquanto 
+
 
             # This will check if all of the conditions in one of the arrays are true using the built-in python all() function
             if all(conditions_vertical) or all(conditions_horizontal) or all(conditions_diagonal_1) or all(conditions_diagonal_2):
+                print(conditions_diagonal_2)
                 print(
                     f"o jogador {player} ganhou o jooj!!!\nParabéns {player}, você é muito brabo", end="")
 
     # The function that draws the board
     def draw_board(self):
         self.line_thicness = 4
+        self.line_color = colors['WHITE'] if settings['dark_theme'] == True else colors['BLACK']
         # this is the offset between the lines
         # calculated by the division of the width (x) and the height (y) of the screen and the length of the board
         self.x_off = SCREEN_SIZE[0] // len(self.board)
@@ -78,11 +93,11 @@ class Board:
         # very smart calculations (nope)
         for i in range((len(self.board))-1):
             pygame.draw.line(
-                self.screen, colors['BLACK'], (0, (i + 1) * self.x_off), (SCREEN_SIZE[0], (i + 1) * self.y_off), self.line_thicness)
+                self.screen, self.line_color, (0, (i + 1) * self.x_off), (SCREEN_SIZE[0], (i + 1) * self.y_off), self.line_thicness)
 
             for j in range(len(self.board[i])-1):
                 pygame.draw.line(
-                    self.screen, colors['BLACK'], ((j + 1) * self.x_off, 0), ((j + 1) * self.y_off, SCREEN_SIZE[0]), self.line_thicness)
+                    self.screen, self.line_color, ((j + 1) * self.x_off, 0), ((j + 1) * self.y_off, SCREEN_SIZE[0]), self.line_thicness)
 
     # The function for playing the game
     def play(self, mouse_pos):
@@ -140,11 +155,14 @@ class Game:
         self.fps = 60  # maximum frames per second
         self.Player = Player()  # the player class instanciated here
         # the board class instanciated here
-        self.Board = Board(self.screen, self.Player, cols_and_rows=3)
+        self.Board = Board(self.screen, self.Player, cols_and_rows=settings['grid_size'])
+        # sets the background color according to the theme
+        self.background_color = colors['BLACK'] if settings['dark_theme'] == True else colors['WHITE']
         # it fills the screen once, so we can draw a lot of things when we click
-        self.screen.fill(colors['WHITE'])
+        self.screen.fill(self.background_color)
 
     # the render method, where we render the stuff we need to render when the program starts
+
     def render(self):
         self.Board.draw_board()  # drawining the board
         pygame.display.update()  # updating the display
@@ -166,7 +184,7 @@ class Game:
 
     # the method that contains the main while loop (the heart of the game)
     def main_loop(self):
-        self.clock.tick(self.fps) # limits the fps
+        self.clock.tick(self.fps)  # limits the fps
         while not self.done:
             self.event_loop()
             self.render()
