@@ -1,39 +1,40 @@
 import pygame
 import json
-import os
+from jogador import Jogador
 from pygame.locals import *
-from colors import *
 
 # some constants
 SCREEN_SIZE = (500, 500)
 TITLE = "Tic Tac Toe"
+colors = {
+    "WHITE": [255, 255, 255],
+    "BLACK": [21, 29, 33],
+    "RED": [255, 0, 0],
+    "BLUE" : [0, 0, 255]
 
+}
 pygame.font.init()
 
 with open('./settings.json') as f:
     settings = json.load(f)
 
-# Player class
 
-
-class Player:
-    def __init__(self):
-
-        # An array that contains the players
-        self.players = [
-            'O', 'X'
-        ]
-        # the current player (this will be changed through the plays)
-        self.current_player = 1
-
-    # the function that changes the current player
-    def change_players(self):
-        if self.current_player == 0:
-            self.current_player = 1
-        elif self.current_player == 1:
-            self.current_player = 0
-
-# The board class
+# class Player:
+#     def __init__(self):
+#
+#         # An array that contains the players
+#         self.players = [
+#             'O', 'X'
+#         ]
+#         # the current player (this will be changed through the plays)
+#         self.current_player = 1
+#
+#     # the function that changes the current player
+#     def change_players(self):
+#         if self.current_player == 0:
+#             self.current_player = 1
+#         elif self.current_player == 1:
+#             self.current_player = 0
 
 
 class Board:
@@ -68,17 +69,18 @@ class Board:
             conditions_diagonal_1 = [self.board[row][row] ==
                                      player for row in range(len(self.board))]  # this is for the first diagonal
             # conditions_diagonal_2 = [self.board[col][row] ==
-            #                          player for row in range(len(self.board) - 1, -1, -1)]  # this is for the second diagonal
+            # player for row in range(len(self.board) - 1, -1, -1)]  # this is for the second diagonal
             conditions_diagonal_2 = [self.board[0][2] == player]
 
             # TODO: tentar fazer a condição de diagonal direito, agora eu nao sei fazer por enquanto 
 
-
             # This will check if all of the conditions in one of the arrays are true using the built-in python all() function
-            if all(conditions_vertical) or all(conditions_horizontal) or all(conditions_diagonal_1) or all(conditions_diagonal_2):
-                print(conditions_diagonal_2)
+            if all(conditions_vertical) or all(conditions_horizontal) or all(conditions_diagonal_1) or all(
+                    conditions_diagonal_2):
+                # print(conditions_diagonal_2)
                 print(
-                    f"o jogador {player} ganhou o jooj!!!\nParabéns {player}, você é muito brabo", end="")
+                    f"o jogador {player} ganhou o jogo!!!\nParabéns {player}, você é muito brabo", end="")
+                exit()
 
     # The function that draws the board
     def draw_board(self):
@@ -91,13 +93,15 @@ class Board:
 
         # The code that draws the lines using the X offset and the Y offset
         # very smart calculations (nope)
-        for i in range((len(self.board))-1):
+        for i in range((len(self.board)) - 1):
             pygame.draw.line(
-                self.screen, self.line_color, (0, (i + 1) * self.x_off), (SCREEN_SIZE[0], (i + 1) * self.y_off), self.line_thicness)
+                self.screen, self.line_color, (0, (i + 1) * self.x_off), (SCREEN_SIZE[0], (i + 1) * self.y_off),
+                self.line_thicness)
 
-            for j in range(len(self.board[i])-1):
+            for j in range(len(self.board[i]) - 1):
                 pygame.draw.line(
-                    self.screen, self.line_color, ((j + 1) * self.x_off, 0), ((j + 1) * self.y_off, SCREEN_SIZE[0]), self.line_thicness)
+                    self.screen, self.line_color, ((j + 1) * self.x_off, 0), ((j + 1) * self.y_off, SCREEN_SIZE[0]),
+                    self.line_thicness)
 
     # The function for playing the game
     def play(self, mouse_pos):
@@ -131,14 +135,20 @@ class Board:
 
                 # a lot of smart calculations (good luck understanding then)
                 pygame.draw.line(
-                    self.screen, colors['RED'], ((self.mouse_x)*self.x_off+lp, (self.mouse_y)*self.y_off+lp), ((self.mouse_x + 1)*self.x_off-lp, (self.mouse_y+1)*self.y_off-lp), lp)
+                    self.screen, colors['RED'], ((self.mouse_x) * self.x_off + lp, (self.mouse_y) * self.y_off + lp),
+                    ((self.mouse_x + 1) * self.x_off - lp, (self.mouse_y + 1) * self.y_off - lp), lp)
                 pygame.draw.line(
-                    self.screen, colors['RED'], ((self.mouse_x) * self.x_off + lp, (self.mouse_y + 1) * self.y_off - lp), ((self.mouse_x + 1) * self.x_off - lp, (self.mouse_y) * self.y_off + lp), lp)
+                    self.screen, colors['RED'],
+                    ((self.mouse_x) * self.x_off + lp, (self.mouse_y + 1) * self.y_off - lp),
+                    ((self.mouse_x + 1) * self.x_off - lp, (self.mouse_y) * self.y_off + lp), lp)
 
             # if it is the 'O' (current_player = 1)
             elif self.player.current_player == 1:
                 pygame.draw.ellipse(self.screen, colors['BLUE'], ((
-                    self.mouse_x)*self.x_off + lp/2, (self.mouse_y)*self.y_off + lp/2, self.x_off - lp, self.y_off - lp), 0)
+                                                                      self.mouse_x) * self.x_off + lp / 2,
+                                                                  (self.mouse_y) * self.y_off + lp / 2, self.x_off - lp,
+                                                                  self.y_off - lp), 0)
+
 
 # The Game class
 
@@ -153,7 +163,7 @@ class Game:
         self.keys = pygame.key.get_pressed()
         self.clock = pygame.time.Clock()  # the pygame clock class
         self.fps = 60  # maximum frames per second
-        self.Player = Player()  # the player class instanciated here
+        self.Player = Jogador()  # the player class instanciated here
         # the board class instanciated here
         self.Board = Board(self.screen, self.Player, cols_and_rows=settings['grid_size'])
         # sets the background color according to the theme
