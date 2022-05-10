@@ -127,7 +127,7 @@ class Board:
         if self.mouse_x is not None and self.mouse_y is not None:
             # checks which player will be drawn by the value of the current_player variable
             # if it is 'X' (current_player = 0)
-            if self.player.current_player is 0:
+            if self.player.current_player == 0:
 
                 # a lot of smart calculations (good luck understanding then)
                 pygame.draw.line(
@@ -136,7 +136,7 @@ class Board:
                     self.screen, colors['RED'], ((self.mouse_x) * self.x_off + lp, (self.mouse_y + 1) * self.y_off - lp), ((self.mouse_x + 1) * self.x_off - lp, (self.mouse_y) * self.y_off + lp), lp)
 
             # if it is the 'O' (current_player = 1)
-            elif self.player.current_player is 1:
+            elif self.player.current_player == 1:
                 pygame.draw.ellipse(self.screen, colors['BLUE'], ((
                     self.mouse_x)*self.x_off + lp/2, (self.mouse_y)*self.y_off + lp/2, self.x_off - lp, self.y_off - lp), 0)
 
