@@ -51,6 +51,7 @@ class Board:
         # Declaring the coordinates of the mouse so we can make the use of it
         self.mouse_x = None
         self.mouse_y = None
+        self.game_won = False
 
     # The function that will determine who is the winner
     def check_winner(self, player):
@@ -60,27 +61,60 @@ class Board:
         Here comes a lot of conditions in diferent arrays
         and if all of one of them are True, then print the winner
         """
-        for col in range(len(self.board)):
 
-            conditions_vertical = [self.board[row][col] ==
-                                   player for row in range(len(self.board))]  # this is for the verticals
-            conditions_horizontal = [self.board[col][row] ==
-                                     player for row in range(len(self.board))]  # this is for the horizontals
-            conditions_diagonal_1 = [self.board[row][row] ==
-                                     player for row in range(len(self.board))]  # this is for the first diagonal
-            # conditions_diagonal_2 = [self.board[col][row] ==
-            # player for row in range(len(self.board) - 1, -1, -1)]  # this is for the second diagonal
-            conditions_diagonal_2 = [self.board[row][len(self.board) - 1 - row] == player for row in range(len(self.board) - 1, 0, -1)]
+        
+        # vertical
+        for row in range(len(self.board)):
+            vertical_conditions = []
+            for col in range(len(self.board)):
+                vertical_conditions.append(self.board[col][row] == player)
+            if all(vertical_conditions):
+                print("winner: ", self.board[0][row])
+                self.draw_line(0, row, 0)
+                self.game_won = True
 
-            # TODO: tentar fazer a condição de diagonal direito, agora eu nao sei fazer por enquanto 
+        # horizontal
+        for row in range(len(self.board)):
+            horizontal_conditions = []
+            for col in range(len(self.board)):
+                horizontal_conditions.append(self.board[row][col] == player)
+            if all(horizontal_conditions):
+                print("winner: ", self.board[row][0])
+                self.draw_line(row, 0, 1)
+                self.game_won = True
 
-            # This will check if all of the conditions in one of the arrays are true using the built-in python all() function
-            if all(conditions_vertical) or all(conditions_horizontal) or all(conditions_diagonal_1) or all(
-                    conditions_diagonal_2):
-                # print(conditions_diagonal_2)
-                print(
-                    f"o jogador {player} ganhou o jogo!!!\nParabéns {player}, você é muito brabo", end="")
-                exit()
+        # diagonal 1
+        diagonal1_conditions = []
+        for row in range(len(self.board)):
+            diagonal1_conditions.append(self.board[row][row] == player)
+        if all(diagonal1_conditions):
+            print("winner: ", self.board[0][0])
+            self.draw_line(0, 0, 2)
+            self.game_won = True
+
+        # diagonal 2
+        diagonal2_conditions = []
+        # loops in reverse to get combinations like: (2, 0); (1, 1); (0, 2)
+        for row in range(len(self.board) - 1, -1, -1):
+            print(row, len(self.board) - 1 - row)
+            diagonal2_conditions.append(self.board[row][len(self.board) - 1 - row] == player)
+        if all(diagonal2_conditions):
+            print("winner: ", self.board[0][len(self.board) - 1])
+            self.draw_line(0, len(self.board) - 1 - row, 3)
+            self.game_won = True
+
+
+
+    def draw_line(self, row, col, type):
+        print(col)
+        if type == 0: # vertical
+            pygame.draw.line(self.screen, (255, 123, 0), ((col * self.x_off) + (self.x_off * 0.5), 0), ((col * self.x_off) + (self.x_off * 0.5), SCREEN_SIZE[1]), self.line_thicness * 2)
+        elif type == 1: # horizontal
+            pygame.draw.line(self.screen, (255, 123, 0), (0, (row * self.y_off) + (self.y_off * 0.5)), (SCREEN_SIZE[0], (row * self.y_off) + (self.y_off * 0.5)), self.line_thicness * 2)
+        elif type == 2: # diagonal 1
+            pygame.draw.line(self.screen, (255, 123, 0), (0, 0), (SCREEN_SIZE[0], SCREEN_SIZE[1]), self.line_thicness * 2)
+        elif type == 3: # diagonal 2
+            pygame.draw.line(self.screen, (255, 123, 0), (SCREEN_SIZE[0], 0), (0, SCREEN_SIZE[1]), self.line_thicness * 2)
 
     # The function that draws the board
     def draw_board(self):
@@ -112,14 +146,14 @@ class Board:
 
         # It checks if the place where you clicked is empty or not
         # if it is, then mark, else, do nothing
-        if self.board[self.mouse_y][self.mouse_x] == '':
+        if self.board[self.mouse_y][self.mouse_x] == '' and not self.game_won:
             # adds to the board and X or an O (depends on the current_player variable)
             self.board[self.mouse_y][self.mouse_x] = self.player.players[self.player.current_player]
+            self.draw_players()  # every time that a play happens, it will draw the players
             # runs the check winner function by passing the current_player
             self.check_winner(self.player.players[self.player.current_player])
             # When the play is done (the user clicked in some spot), the turn changes
             self.player.change_players()
-            self.draw_players()  # every time that a play happens, it will draw the players
 
     # The function that draws the players
     def draw_players(self):

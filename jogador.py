@@ -6,7 +6,7 @@ class Jogador:
             'O', 'X'
         ]
         # the current player (this will be changed through the plays)
-        self.current_player = 1
+        self.current_player = 0
 
     # the function that changes the current player
     def change_players(self):
