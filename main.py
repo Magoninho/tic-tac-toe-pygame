@@ -70,7 +70,7 @@ class Board:
                                      player for row in range(len(self.board))]  # this is for the first diagonal
             # conditions_diagonal_2 = [self.board[col][row] ==
             # player for row in range(len(self.board) - 1, -1, -1)]  # this is for the second diagonal
-            conditions_diagonal_2 = [self.board[0][2] == player]
+            conditions_diagonal_2 = [self.board[row][len(self.board) - 1 - row] == player for row in range(len(self.board) - 1, 0, -1)]
 
             # TODO: tentar fazer a condição de diagonal direito, agora eu nao sei fazer por enquanto 
 
